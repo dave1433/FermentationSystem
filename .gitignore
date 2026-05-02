@@ -15,6 +15,7 @@ Thumbs.db
 .pio/
 .pioenvs/
 .piolibdeps/
+firmware/**/Config.h
 
 # =========================
 # 🔹 Node / React
