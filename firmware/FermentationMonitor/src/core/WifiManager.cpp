@@ -13,4 +13,6 @@ void WifiManager::connect()
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("Connected to WiFi");
     }
+
+    Serial.println(WiFi.localIP());
 }

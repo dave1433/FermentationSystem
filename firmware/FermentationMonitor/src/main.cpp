@@ -8,10 +8,12 @@
 #include "config/Config.h"
 #include "utils/DisplayManager.h"
 #include "services/TelemetryService.h"
+#include "core/OtaManager.h"
 
 DisplayManager display;
 WifiManager wifi;
 MqttManager mqtt;
+OtaManager ota;
 TelemetryService telemetry;
 TemperatureSensor tempSensor(4);
 AlcoholSensor alcoholSensor(34);
@@ -44,6 +46,10 @@ void setup() {
     logStatus("WiFi", "Connected");
     delay(1000);
 
+    ota.init([&]() {
+    display.showMessage("OTA", "Updating...");
+    });
+
     mqtt.connect();
     logStatus("MQTT", "Connected");
     delay(1000);
@@ -53,6 +59,7 @@ void setup() {
 
 void loop() {
     mqtt.loop();
+    ota.handle();
 
     static unsigned long lastMsg = 0;
 
