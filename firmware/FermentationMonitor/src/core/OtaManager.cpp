@@ -8,7 +8,7 @@ void OtaManager::init(std::function<void()> onStartCallback) {
         Serial.println("OTA Start");
 
         if (onStartCallback) {
-            onStartCallback();   /
+            onStartCallback();
         }
     });
 
