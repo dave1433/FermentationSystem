@@ -5,21 +5,21 @@
 
 extern MqttManager mqtt;
 
-void TelemetryService::publish(float temperature, float alcohol) {
+void TelemetryService::publish(float temperature, float ethanolSignal, String timestamp) {
     StaticJsonDocument<200> doc;
 
     doc["temperature"] = temperature;
-    doc["device"] = "FermentationMonitor";
-    doc["timestamp"] = millis();
+    doc["deviceId"] = "fermentation-monitor-1";
+    doc["timestamp"] = timestamp;
 
-    float normalized = alcohol / 4095.0;
+    float normalized = ethanolSignal / 4095.0;
     normalized = round(normalized * 1000) / 1000.0; // Round to 3 decimal places
 
-    bool alcoholDetected = normalized > 0.01;
+    bool fermentationActive = normalized > 0.05;
    
-    if (alcohol >= 0) {
-        doc["alcohol"] = normalized; 
-        doc["alcohol_detected"] = alcoholDetected;
+    if (ethanolSignal >= 0) {
+        doc["ethanolSignal"] = normalized; 
+        doc["fermentationActive"] = fermentationActive;
     }
 
     char buffer[200];

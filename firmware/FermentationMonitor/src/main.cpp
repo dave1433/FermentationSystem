@@ -8,11 +8,13 @@
 #include "config/Config.h"
 #include "utils/DisplayManager.h"
 #include "services/TelemetryService.h"
+#include "core/TimeManager.h"
 #include "core/OtaManager.h"
 
 DisplayManager display;
 WifiManager wifi;
 MqttManager mqtt;
+TimeManager timeManager;
 OtaManager ota;
 TelemetryService telemetry;
 TemperatureSensor tempSensor(4);
@@ -45,6 +47,8 @@ void setup() {
     wifi.connect();
     logStatus("WiFi", "Connected");
     delay(1000);
+
+    timeManager.init();
 
     ota.init([&]() {
     display.showMessage("OTA", "Updating...");
@@ -99,7 +103,7 @@ void loop() {
 
         // Read sensors
         float temp = tempSensor.read();
-        float alcohol = alcoholSensor.read();
+        float ethanolSignal = alcoholSensor.read();
 
         // Validate temperature
         bool tempValid = (temp > -50 && temp < 100);
@@ -115,17 +119,16 @@ void loop() {
             logStatus("TempSensor", "Recovered");
             sensorErrorShown = false;
         }
-
-        // Clamp alcohol value
-        if (alcohol < 0) alcohol = 0;
-        if (alcohol > 1) alcohol = 1;
-
+        
         // Update LCD
         display.showTemperature(temp);
 
+        // Get ISO timestamp
+        String timestamp = timeManager.getISOTime();
+
         // Publish only if connections are healthy
         if (wifi.isConnected() && mqtt.isConnected()) {
-            telemetry.publish(temp, alcohol);
+            telemetry.publish(temp, ethanolSignal, timestamp);
         }
     }
 }
