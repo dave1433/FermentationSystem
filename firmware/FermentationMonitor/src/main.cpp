@@ -58,28 +58,74 @@ void setup() {
 }
 
 void loop() {
-    mqtt.loop();
     ota.handle();
+    mqtt.loop();
 
-    static unsigned long lastMsg = 0;
+    // =========================
+    // WiFi Recovery
+    // =========================
+    static unsigned long lastWifiRetry = 0;
 
-    if (millis() - lastMsg > 5000) {
-        lastMsg = millis();
+    if (!wifi.isConnected() && millis() - lastWifiRetry > 5000) {
+        lastWifiRetry = millis();
 
+        logStatus("WiFi", "Reconnecting");
+        wifi.connect();
+    }
+
+    // =========================
+    // MQTT State Monitoring
+    // =========================
+    static bool lastMqttState = true;
+
+    bool mqttConnected = mqtt.isConnected();
+
+    if (mqttConnected != lastMqttState) {
+        logStatus(
+            "MQTT",
+            mqttConnected ? "Connected" : "Disconnected"
+        );
+
+        lastMqttState = mqttConnected;
+    }
+
+    // =========================
+    // Telemetry Loop
+    // =========================
+    static unsigned long lastTelemetry = 0;
+
+    if (millis() - lastTelemetry > 5000) {
+        lastTelemetry = millis();
+
+        // Read sensors
         float temp = tempSensor.read();
         float alcohol = alcoholSensor.read();
 
-        bool valid = (temp > -50 && temp < 100);
+        // Validate temperature
+        bool tempValid = (temp > -50 && temp < 100);
 
-        static bool lastState = false;
-        if (valid != lastState) {
-            logStatus("TempSensor", valid ? "OK" : "Error");
-            lastState = valid;
-            delay(1000);
+        static bool sensorErrorShown = false;
+
+        if (!tempValid && !sensorErrorShown) {
+            logStatus("TempSensor", "Error");
+            sensorErrorShown = true;
         }
-        
+
+        if (tempValid && sensorErrorShown) {
+            logStatus("TempSensor", "Recovered");
+            sensorErrorShown = false;
+        }
+
+        // Clamp alcohol value
+        if (alcohol < 0) alcohol = 0;
+        if (alcohol > 1) alcohol = 1;
+
+        // Update LCD
         display.showTemperature(temp);
 
-        telemetry.publish(temp, alcohol);
+        // Publish only if connections are healthy
+        if (wifi.isConnected() && mqtt.isConnected()) {
+            telemetry.publish(temp, alcohol);
+        }
     }
 }

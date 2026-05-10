@@ -4,6 +4,7 @@
 
 class MqttManager {
 public:
+    bool isConnected();
     void connect();
     void loop();
     void publish(const char* topic, const char* message);

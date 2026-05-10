@@ -3,4 +3,5 @@
 class WifiManager {
 public:
     void connect();
+    bool isConnected();
 };

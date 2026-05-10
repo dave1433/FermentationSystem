@@ -16,3 +16,7 @@ void WifiManager::connect()
 
     Serial.println(WiFi.localIP());
 }
+
+bool WifiManager::isConnected() {
+    return WiFi.status() == WL_CONNECTED;
+}

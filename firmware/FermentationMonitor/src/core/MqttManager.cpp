@@ -25,6 +25,10 @@ void MqttManager::reconnect() {
     }
 }
 
+bool MqttManager::isConnected() {
+    return client.connected();
+}
+
 void MqttManager::loop() {
     if (!client.connected()) {
         reconnect();
