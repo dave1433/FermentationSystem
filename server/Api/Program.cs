@@ -1,44 +1,54 @@
+using Api.Controllers;
+using Api.Data;
+using Microsoft.EntityFrameworkCore;
+using Mqtt.Controllers;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// ===== DbContext =====
+builder.Services.AddDbContextFactory<FermentationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
 
+// ===== MQTT Controllers =====
+builder.Services.AddSingleton<FermentationMqttController>();
+builder.Services.AddMqttControllers();
+
+// ===== Controllers =====
+builder.Services.AddControllers();
+
+// ===== OpenAPI / Swagger =====
+builder.Services.AddOpenApiDocument();
+
+// ===== CORS =====
+builder.Services.AddCors();
+
+// ===== Build App =====
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// ===== Middleware =====
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseCors(c =>
+    c.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin()
+        .SetIsOriginAllowed(_ => true));
 
-app.UseHttpsRedirection();
+// ===== Controllers / Endpoints =====
+app.MapControllers();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// ===== OpenAPI UI =====
+app.UseOpenApi();
+app.UseSwaggerUi();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+// ===== MQTT Client =====
+var mqtt = app.Services.GetRequiredService<IMqttClientService>();
+
+// Flespi broker: mqtt.flespi.io:1883
+// Authentication: use your flespi token as the username, leave password empty
+var flespiToken = builder.Configuration["Flespi:Token"]
+                  ?? throw new InvalidOperationException("Flespi token missing. Add 'Flespi:Token' to appsettings.");
+
+await mqtt.ConnectAsync("mqtt.flespi.io", 1883, username: flespiToken, password: string.Empty);
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
