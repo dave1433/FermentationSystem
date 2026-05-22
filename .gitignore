@@ -35,4 +35,3 @@ obj/
 # 🔹 Logs
 # =========================
 *.log
-server/Api/appsettings.json

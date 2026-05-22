@@ -1,42 +1,44 @@
 using System.Text.Json;
 using Mqtt.Controllers;
-using Microsoft.EntityFrameworkCore;
-using Api.Data;
 using Api.Entities;
+using Api.Services;
 
 namespace Api.Controllers;
 
 public class FermentationMqttController : MqttController
 {
     private readonly ILogger<FermentationMqttController> _logger;
-    private readonly IDbContextFactory<FermentationDbContext> _ctxFactory;
+    private readonly TelemetryService _telemetryService;
 
     public FermentationMqttController(
         ILogger<FermentationMqttController> logger,
-        IDbContextFactory<FermentationDbContext> ctxFactory)
+        TelemetryService telemetryService)
     {
         _logger = logger;
-        _ctxFactory = ctxFactory;
+        _telemetryService = telemetryService;
     }
 
     [MqttRoute("rdco0314/fermentation/data")]
-    public async Task ListenForTelemetry(FermentationTelemetryEntity telemetry)
+    public async Task ListenForTelemetry(
+        FermentationTelemetryEntity telemetry)
     {
-        _logger.LogInformation("Telemetry received: {Payload}", JsonSerializer.Serialize(telemetry));
-
-        telemetry.Id = Guid.NewGuid();
-        telemetry.Timestamp = DateTime.UtcNow;
+        _logger.LogInformation(
+            "Telemetry received: {Payload}",
+            JsonSerializer.Serialize(telemetry));
 
         try
         {
-            using var ctx = _ctxFactory.CreateDbContext();
-            ctx.Telemetries.Add(telemetry);
-            await ctx.SaveChangesAsync();
-            _logger.LogInformation("Telemetry saved successfully");
+            await _telemetryService
+                .SaveTelemetryAsync(telemetry);
+
+            _logger.LogInformation(
+                "Telemetry saved successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to save telemetry to DB");
+            _logger.LogError(
+                ex,
+                "Failed to save telemetry to DB");
         }
     }
 }

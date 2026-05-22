@@ -21,44 +21,27 @@ TemperatureSensor tempSensor(4);
 AlcoholSensor alcoholSensor(34);
 
 void logStatus(const char* line1, const char* line2) {
-    Serial.print(line1);
-    Serial.print(" ");
-    Serial.println(line2);
-
     display.showMessage(line1, line2);
 }
 
 void setup() {
-    Serial.begin(115200);
-
-    Serial.println("INIT SENSOR...");
     tempSensor.init();
-    Serial.println("SENSOR INIT DONE");
-    
-    Serial.println("INIT ALCOHOL SENSOR...");
     alcoholSensor.init();
-    Serial.println("ALCOHOL SENSOR INIT DONE");
-
     display.init();
 
     logStatus("Starting...", "");
-    delay(1000);
 
     wifi.connect();
     logStatus("WiFi", "Connected");
-    delay(1000);
 
     timeManager.init();
 
     ota.init([&]() {
-    display.showMessage("OTA", "Updating...");
+        display.showMessage("OTA", "Updating...");
     });
 
     mqtt.connect();
     logStatus("MQTT", "Connected");
-    delay(1000);
-    
-
 }
 
 void loop() {
@@ -98,7 +81,7 @@ void loop() {
     // =========================
     static unsigned long lastTelemetry = 0;
 
-    if (millis() - lastTelemetry > 5000) {
+    if (millis() - lastTelemetry > 300000) {
         lastTelemetry = millis();
 
         // Read sensors

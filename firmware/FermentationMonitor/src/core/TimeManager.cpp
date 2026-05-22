@@ -5,8 +5,6 @@
 void TimeManager::init() {
     configTime(0, 0, "pool.ntp.org");
 
-    Serial.println("Syncying Time...");
-
     struct tm timeinfo;
 
     while(!getLocalTime(&timeinfo)) {

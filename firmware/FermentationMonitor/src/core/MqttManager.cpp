@@ -8,15 +8,13 @@ void MqttManager::connect() {
 
 void MqttManager::reconnect() {
     while (!client.connected()) {
-        Serial.println("Connecting to MQTT...");
-
 #if MQTT_USE_AUTH
         if (client.connect(MQTT_CLIENT_ID, MQTT_USERNAME, MQTT_PASSWORD))
 #else
         if (client.connect(MQTT_CLIENT_ID))
 #endif
         {
-            Serial.println("MQTT connected");
+            // Connected
         } else {
             Serial.print("MQTT failed, rc=");
             Serial.println(client.state());
@@ -37,17 +35,13 @@ void MqttManager::loop() {
 }
 
 void MqttManager::publish(const char* topic, const char* message) {
-    if (client.publish(topic, message)) {
-        Serial.println("MQTT sent");
-    } else {
+    if (!client.publish(topic, message)) {
         Serial.println("MQTT publish failed");
     }
 }
 
 void MqttManager::publish(const char* topic, const char* message, size_t length) {
-    if (client.publish(topic, message, length)) {
-        Serial.println("MQTT sent");
-    } else {
+    if (!client.publish(topic, message, length)) {
         Serial.println("MQTT publish failed");
     }
 }

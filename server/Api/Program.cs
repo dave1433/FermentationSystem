@@ -1,10 +1,16 @@
 using Api.Controllers;
 using Api.Data;
+using Api.Services;
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using Mqtt.Controllers;
 
+Env.Load(".env");
+
 var builder = WebApplication.CreateBuilder(args);
 
+// ===== Configuration =====
+builder.Configuration.AddEnvironmentVariables();
 // ===== DbContext =====
 builder.Services.AddDbContextFactory<FermentationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Postgres")));
@@ -13,6 +19,7 @@ builder.Services.AddDbContextFactory<FermentationDbContext>(options =>
 builder.Services.AddSingleton<FermentationMqttController>();
 builder.Services.AddMqttControllers();
 
+builder.Services.AddScoped<TelemetryService>();
 // ===== Controllers =====
 builder.Services.AddControllers();
 
@@ -46,8 +53,8 @@ var mqtt = app.Services.GetRequiredService<IMqttClientService>();
 
 // Flespi broker: mqtt.flespi.io:1883
 // Authentication: use your flespi token as the username, leave password empty
-var flespiToken = builder.Configuration["Flespi:Token"]
-                  ?? throw new InvalidOperationException("Flespi token missing. Add 'Flespi:Token' to appsettings.");
+var flespiToken = builder.Configuration["Mqtt:Username"]
+                  ?? throw new InvalidOperationException("Flespi token missing. Add 'Mqtt:Username' to .env.");
 
 await mqtt.ConnectAsync("mqtt.flespi.io", 1883, username: flespiToken, password: string.Empty);
 
