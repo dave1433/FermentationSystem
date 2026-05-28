@@ -19,9 +19,21 @@ public class TelemetryService
     {
         using var ctx = _ctxFactory.CreateDbContext();
 
-        telemetry.Id = Guid.NewGuid();
+        var existing = await ctx.Telemetries
+            .FirstOrDefaultAsync(t => t.DeviceId == telemetry.DeviceId);
 
-        ctx.Telemetries.Add(telemetry);
+        if (existing == null)
+        {
+            telemetry.Id = Guid.NewGuid();
+            ctx.Telemetries.Add(telemetry);
+        }
+        else
+        {
+            existing.Temperature = telemetry.Temperature;
+            existing.EthanolSignal = telemetry.EthanolSignal;
+            existing.FermentationActive = telemetry.FermentationActive;
+            existing.Timestamp = telemetry.Timestamp;
+        }
 
         await ctx.SaveChangesAsync();
     }
