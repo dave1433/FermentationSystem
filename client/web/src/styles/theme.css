@@ -1,0 +1,366 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+:root {
+  --color-bg-base: #080704;
+  --color-bg-surface: #0a0805;
+  --color-bg-card: #0e0c09;
+
+  --color-border-subtle: #1a1510;
+  --color-border-muted: #2a2318;
+
+  --color-copper: #C87941;
+  --color-copper-dark: #7a4520;
+  --color-copper-glow: #C8794188;
+
+  --color-text-primary: #e8d5b8;
+  --color-text-secondary: #8a7560;
+  --color-text-muted: #6b5c47;
+  --color-text-faint: #4a3d2e;
+  --color-text-ghost: #2a2318;
+
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+
+  --scanline: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  min-height: 100vh;
+}
+
+.scanline-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background-image: var(--scanline);
+}
+
+/* ── Typography ── */
+.label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.display {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--color-text-primary);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* ── Glow dot ── */
+.glow-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border-muted);
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+
+.glow-dot--active {
+  background: var(--color-copper);
+  box-shadow: 0 0 6px 2px var(--color-copper-glow);
+}
+
+/* ── Divider ── */
+.copper-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-copper) 0%, var(--color-border-muted) 60%, transparent 100%);
+  margin-top: 8px;
+}
+
+/* ── Surface / card ── */
+.surface {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  padding: 1rem;
+}
+
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-muted);
+  padding: 1.25rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.card--accent {
+  border-color: var(--color-copper);
+}
+
+.card__accent-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--color-copper), var(--color-copper-dark));
+}
+
+/* ── Status bar ── */
+.status-bar {
+  border-bottom: 1px solid var(--color-border-subtle);
+  padding: 10px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-bg-surface);
+}
+
+.status-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.status-bar__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-bar__separator {
+  color: var(--color-border-muted);
+  font-size: 10px;
+}
+
+.status-bar__text {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  transition: color 0.4s ease;
+}
+
+.status-bar__text--active {
+  color: var(--color-copper);
+}
+
+/* ── Header ── */
+.header {
+  padding: 2rem 32px 1rem;
+}
+
+.header__title {
+  font-size: clamp(48px, 8vw, 96px);
+}
+
+.header__accent {
+  color: var(--color-copper);
+}
+
+/* ── Stat card ── */
+.stat-card__label {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.stat-card__value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.stat-card__value--accent {
+  color: var(--color-copper);
+}
+
+.stat-card__unit {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-left: 6px;
+}
+
+/* ── Charts ── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.chart-panel__label {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: 1rem;
+}
+
+/* ── Live log ── */
+.log-container {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.log-entry {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--color-bg-base);
+}
+
+.log-entry__time {
+  color: var(--color-text-faint);
+  white-space: nowrap;
+}
+
+.log-entry__tag {
+  color: var(--color-copper);
+  font-weight: 700;
+}
+
+.log-entry__body {
+  color: var(--color-text-secondary);
+}
+
+.log-entry__value {
+  color: var(--color-text-primary);
+}
+
+.log-entry__active--yes {
+  color: var(--color-copper);
+}
+
+.log-entry__active--no {
+  color: var(--color-text-faint);
+}
+
+/* ── Footer ── */
+.footer {
+  border-top: 1px solid var(--color-border-subtle);
+  padding: 12px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-bg-surface);
+}
+
+.footer__meta {
+  display: flex;
+  gap: 32px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--color-text-ghost);
+  text-transform: uppercase;
+}
+
+.footer__version {
+  font-size: 9px;
+  color: var(--color-copper);
+  letter-spacing: 0.15em;
+  border: 1px solid var(--color-border-muted);
+  padding: 3px 8px;
+}
+
+/* ── Await screen ── */
+.await-screen {
+  min-height: 100vh;
+  background: var(--color-bg-base);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.await-screen__spinner {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--color-copper);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.await-screen__text {
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Main layout ── */
+.main-grid {
+  flex: 1;
+  padding: 1.5rem 32px 2rem;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.col-span-12 {
+  grid-column: span 12;
+}
+
+.stat-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+/* ── Temperature hero ── */
+.temp-hero {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.temp-hero__value {
+  font-size: clamp(80px, 16vw, 160px);
+  line-height: 0.85;
+  color: var(--color-copper);
+  letter-spacing: -0.02em;
+}
+
+.temp-hero__unit {
+  font-size: clamp(24px, 4vw, 40px);
+  color: var(--color-text-muted);
+}
+
+.temp-hero__label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-top: 4px;
+}

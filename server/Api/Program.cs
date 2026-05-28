@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Mqtt.Controllers;
 using StateleSSE.AspNetCore;
 
+Env.Load();
 Env.Load(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".env"));
+Console.WriteLine($"[DEBUG] Mqtt__Username = '{Environment.GetEnvironmentVariable("Mqtt__Username")}'");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,7 +68,9 @@ var port = int.TryParse(config["Mqtt:Port"], out var p) ? p : 1883;
 var username = config["Mqtt:Username"]!;
 var password = config["Mqtt:Password"] ?? string.Empty;
 
+Console.WriteLine($"Connecting to MQTT: {host}:{port} as {username}");
 await mqttClient.ConnectAsync(host, port, username, password);
+Console.WriteLine($"ConnectAsync finished. IsConnected: {mqttClient.IsConnected}");
 
 // Wait until truly connected (up to 10 seconds)
 var deadline = DateTime.UtcNow.AddSeconds(10);
@@ -76,6 +80,7 @@ while (!mqttClient.IsConnected && DateTime.UtcNow < deadline)
 if (!mqttClient.IsConnected)
     throw new Exception("MQTT failed to connect within 10 seconds.");
 
+Console.WriteLine("MQTT truly connected, starting app...");
 app.UseCors(c =>
     c.AllowAnyHeader()
         .AllowAnyMethod()
