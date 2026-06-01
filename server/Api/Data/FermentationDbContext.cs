@@ -11,4 +11,5 @@ public class FermentationDbContext : DbContext
     }
 
     public DbSet<FermentationTelemetryEntity> Telemetries => Set<FermentationTelemetryEntity>();
+    public DbSet<PushSubscriptionEntity> PushSubscriptions => Set<PushSubscriptionEntity>();
 }

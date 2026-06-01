@@ -6,23 +6,23 @@
 extern MqttManager mqtt;
 
 void TelemetryService::publish(double temperature, double ethanolSignal, String timestamp) {
-    StaticJsonDocument<200> doc;
-
+    StaticJsonDocument<256> doc;
     doc["temperature"] = temperature;
     doc["deviceId"] = "fermentation-monitor-1";
     doc["timestamp"] = timestamp;
 
     double normalized = ethanolSignal / 4095.0;
-    normalized = round(normalized * 1000) / 1000.0; // Round to 3 decimal places
-    // Runtime baseline calibration: if baseline not set, capture the current normalized
+    normalized = round(normalized * 1000) / 1000.0;
+
+    // Fixed baseline
     if (isnan(_baseline)) {
-        _baseline = normalized;
+        _baseline = FERMENTATION_BASELINE;
     }
 
-    // Compute delta from baseline
     double delta = normalized - _baseline;
+    double absDelta = abs(normalized - (isnan(_lastNormalized) ? normalized : _lastNormalized));
 
-    // Trend detection: count consecutive increasing normalized readings
+    // Trend detection
     if (!isnan(_lastNormalized) && normalized > _lastNormalized) {
         _increasingCount++;
     } else if (!isnan(_lastNormalized) && normalized <= _lastNormalized) {
@@ -30,27 +30,51 @@ void TelemetryService::publish(double temperature, double ethanolSignal, String 
     }
     _lastNormalized = normalized;
 
-    // Apply hysteresis around the configured threshold on the delta
-    double onThreshold = FERMENTATION_THRESHOLD + (FERMENTATION_HYSTERESIS / 2.0);
+    // Debug
+    Serial.printf("[DEBUG] delta=%.4f normalized=%.4f absDelta=%.4f count=%d stable=%d\n",
+        delta, normalized, absDelta, _increasingCount, _stableCount);
+
+    // Active detection (with hysteresis)
+    double onThreshold  = FERMENTATION_THRESHOLD + (FERMENTATION_HYSTERESIS / 2.0);
     double offThreshold = FERMENTATION_THRESHOLD - (FERMENTATION_HYSTERESIS / 2.0);
 
     bool fermentationActive = false;
-    if (delta > FERMENTATION_MIN_DELTA && _increasingCount >= FERMENTATION_TREND_COUNT) {
-        if (_lastFermentationActive) {
-            fermentationActive = delta > offThreshold;
-        } else {
+    if (_lastFermentationActive) {
+        fermentationActive = delta > offThreshold;
+    } else {
+        if (delta > FERMENTATION_MIN_DELTA && _increasingCount >= FERMENTATION_TREND_COUNT) {
             fermentationActive = delta > onThreshold;
         }
     }
     _lastFermentationActive = fermentationActive;
-   
-    if (ethanolSignal >= 0) {
-        doc["ethanolSignal"] = normalized; 
-        doc["fermentationActive"] = fermentationActive;
+
+    // Track if fermentation was ever active
+    if (fermentationActive) {
+        _wasEverActive = true;
+        _stableCount = 0; // reset stability counter while active
     }
 
-    char buffer[200];
-    size_t n = serializeJson(doc, buffer);
+    // Complete detection — only after having been active
+    if (_wasEverActive && !fermentationActive && !_fermentationComplete) {
+        if (absDelta < FERMENTATION_STABLE_DELTA) {
+            _stableCount++;
+        } else {
+            _stableCount = 0; // reset if reading spikesxs
+        }
 
+        if (_stableCount >= FERMENTATION_STABLE_COUNT) {
+            _fermentationComplete = true;
+            Serial.println("[FERMENTATION] Complete! Beverage ready.");
+        }
+    }
+
+    if (ethanolSignal >= 0) {
+        doc["ethanolSignal"] = normalized;
+        doc["fermentationActive"] = fermentationActive;
+        doc["fermentationComplete"] = _fermentationComplete;
+    }
+
+    char buffer[256];
+    size_t n = serializeJson(doc, buffer);
     mqtt.publish(MQTT_TOPIC, buffer, n);
 }

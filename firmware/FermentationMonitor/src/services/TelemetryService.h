@@ -9,4 +9,8 @@ private:
     float _baseline = NAN;
     float _lastNormalized = NAN;
     int _increasingCount = 0;
+
+    bool _fermentationComplete = false;
+    bool _wasEverActive = false;
+    int _stableCount = 0;
 };

@@ -25,6 +25,7 @@ void logStatus(const char* line1, const char* line2) {
 }
 
 void setup() {
+    Serial.begin(115200);
     tempSensor.init();
     alcoholSensor.init();
     display.init();
@@ -81,7 +82,7 @@ void loop() {
     // =========================
     static unsigned long lastTelemetry = 0;
 
-    if (millis() - lastTelemetry > 300000) {
+    if (millis() - lastTelemetry > TELEMETRY_INTERVAL_MS) {
         lastTelemetry = millis();
 
         // Read sensors

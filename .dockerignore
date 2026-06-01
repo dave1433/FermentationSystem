@@ -1,0 +1,93 @@
+# flyctl launch added from .gitignore
+# =========================
+# 🔹 OS / General
+# =========================
+**/.DS_Store
+**/Thumbs.db
+
+# =========================
+# 🔹 VSCode
+# =========================
+**/.vscode
+
+# =========================
+# 🔹 PlatformIO (ESP32)
+# =========================
+**/.pio
+**/.pioenvs
+**/.piolibdeps
+**/firmware/**/Config.h
+
+# =========================
+# 🔹 Node / React
+# =========================
+**/node_modules
+**/dist
+**/build
+**/.env
+
+# =========================
+# 🔹 .NET
+# =========================
+**/bin
+**/obj
+
+# =========================
+# 🔹 Logs
+# =========================
+**/*.log
+
+# flyctl launch added from client/web/.gitignore
+# Logs
+client/web/**/logs
+client/web/**/*.log
+client/web/**/npm-debug.log*
+client/web/**/yarn-debug.log*
+client/web/**/yarn-error.log*
+client/web/**/pnpm-debug.log*
+client/web/**/lerna-debug.log*
+
+client/web/**/node_modules
+client/web/**/dist
+client/web/**/dist-ssr
+client/web/**/*.local
+
+# Editor directories and files
+client/web/**/.vscode/*
+!client/web/**/.vscode/extensions.json
+client/web/**/.idea
+client/web/**/.DS_Store
+client/web/**/*.suo
+client/web/**/*.ntvs*
+client/web/**/*.njsproj
+client/web/**/*.sln
+client/web/**/*.sw?
+
+# flyctl launch added from firmware/FermentationMonitor/.gitignore
+firmware/FermentationMonitor/**/.pio
+
+# flyctl launch added from firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/.gitignore
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/.idea
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/classes
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/target
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/out
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/build
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/*.iml
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/*.ipr
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/*.iws
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/*.log
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/*.war
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/.idea
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/.project
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/.classpath
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/.settings
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/.gradle
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/DallasTemperature/**/.vscode
+
+# flyctl launch added from firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/PubSubClient/.gitignore
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/PubSubClient/**/tests/bin
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/PubSubClient/**/.pioenvs
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/PubSubClient/**/.piolibdeps
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/PubSubClient/**/.clang_complete
+firmware/FermentationMonitor/.pio/libdeps/dfrobot_firebeetle2_esp32e/PubSubClient/**/.gcc-flags.json
+fly.toml
