@@ -52,7 +52,7 @@ public class TelemetryService
         }
     }
 
-    private async Task SendReadyNotificationAsync(string deviceId)
+    public async Task SendReadyNotificationAsync(string deviceId)
     {
         try
         {

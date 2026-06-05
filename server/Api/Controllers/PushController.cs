@@ -1,6 +1,8 @@
 using Api.Data;
 using Api.Entities;
+using Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
@@ -30,5 +32,12 @@ public class PushController : ControllerBase
     public IActionResult GetVapidPublicKey([FromServices] IConfiguration config)
     {
         return Ok(new { publicKey = config["Vapid:PublicKey"] });
+    }
+
+    [HttpPost("test-notification")]
+    public async Task<IActionResult> TestNotification([FromServices] TelemetryService telemetryService)
+    {
+    await telemetryService.SendReadyNotificationAsync("fermentation-monitor-1");
+    return Ok();
     }
 }

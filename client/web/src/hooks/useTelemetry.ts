@@ -34,13 +34,13 @@ export function useTelemetry(): UseTelemetryResult {
 
     fetch(`${API_BASE}/api/Telemetry/listen?connectionId=${connectionId}`)
       .then(res => res.json())
-      .then((initial: Telemetry) => {
-        if (initial) {
-          setTelemetry(initial);
-          setHistory([{ ...initial, timestamp: new Date().toISOString() }]);
+      .then((initialHistory: Telemetry[]) => {
+        if (initialHistory?.length) {
+          setTelemetry(initialHistory[initialHistory.length - 1]);
+          setHistory(initialHistory.map(r => ({ ...r,timestamp: new Date(r.timestamp).toISOString()})));
         }
-      })
-      .catch(console.error);
+     })
+     .catch(console.error);
 
     return () => {
       sse.close();

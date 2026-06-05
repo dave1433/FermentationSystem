@@ -20,6 +20,48 @@ export default function App() {
       </div>
     );
   }
+  if (telemetry?.fermentationComplete) {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: '#080704',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: "'Bebas Neue', sans-serif",
+    }}>
+      <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+      <div style={{ fontSize: 120, marginBottom: 24 }}>🍷</div>
+      <h1 style={{
+        fontSize: 'clamp(48px, 10vw, 96px)',
+        color: '#C87941',
+        letterSpacing: '0.08em',
+        margin: 0,
+      }}>
+        READY TO DRINK
+      </h1>
+      <p style={{
+        fontFamily: "'Space Mono', monospace",
+        color: '#6b5c47',
+        fontSize: 14,
+        letterSpacing: '0.3em',
+        textTransform: 'uppercase',
+        marginTop: 16,
+      }}>
+        Fermentation complete · {telemetry.deviceId}
+      </p>
+      <p style={{
+        fontFamily: "'Space Mono', monospace",
+        color: '#4a3d2e',
+        fontSize: 12,
+        marginTop: 8,
+      }}>
+        Final temperature: {telemetry.temperature.toFixed(1)}°C
+      </p>
+    </div>
+  );
+}
 
   const chartData = history.map(r => ({
     time: format(new Date(r.timestamp), 'HH:mm:ss'),

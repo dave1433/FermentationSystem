@@ -7,6 +7,10 @@ app = 'fermentation-web'
 primary_region = 'cdg'
 
 [build]
+  dockerfile = "Dockerfile"
+
+[build.args]
+  VITE_API_URL = "https://fermentwatch-api.fly.dev"
 
 [http_service]
   internal_port = 8080

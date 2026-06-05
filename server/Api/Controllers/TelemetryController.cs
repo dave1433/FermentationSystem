@@ -24,16 +24,19 @@ public class TelemetryController : ControllerBase
     [HttpGet("listen")]
     public async Task<IActionResult> Listen([FromQuery] string connectionId)
     {
-        if (string.IsNullOrEmpty(connectionId))
-            return BadRequest("ConnectionId is required");
+       if (string.IsNullOrEmpty(connectionId))
+          return BadRequest("ConnectionId is required");
 
-        var group = "telemetry";
-        await _backplane.Groups.AddToGroupAsync(connectionId, group);
+       await _backplane.Groups.AddToGroupAsync(connectionId, "telemetry");
 
-        using var ctx = _ctxFactory.CreateDbContext();
-        var initial = await ctx.Telemetries.OrderByDescending(t => t.Timestamp).FirstOrDefaultAsync();
-        
-        return Ok(initial);
+       using var ctx = _ctxFactory.CreateDbContext();
+       var history = await ctx.Telemetries
+        .OrderByDescending(t => t.Timestamp)
+        .Take(50)
+        .OrderBy(t => t.Timestamp)
+        .ToListAsync();
+
+       return Ok(history);
     }
 
     [HttpGet]
